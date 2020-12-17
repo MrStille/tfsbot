@@ -34,12 +34,9 @@ public class BatisModule extends org.mybatis.guice.MyBatisModule {
     }
 
     @Singleton
-    public static class PlayDataSourceProvider implements Provider<DataSource> {
-        final Database db;
-
+    public static record PlayDataSourceProvider(Database db) implements Provider<DataSource> {
         @Inject
-        public PlayDataSourceProvider(final Database db) {
-            this.db = db;
+        public PlayDataSourceProvider {
         }
 
         @Override
@@ -47,5 +44,4 @@ public class BatisModule extends org.mybatis.guice.MyBatisModule {
             return db.getDataSource();
         }
     }
-
 }

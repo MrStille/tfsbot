@@ -38,38 +38,28 @@ public class FileViewer extends ARole implements CallbackSink {
     @Override
     public void onCallback(final Command command) {
         switch (command.type) {
-            case openParent:
-                backToParent();
-                break;
-            case unlock:
+            case openParent -> backToParent();
+            case unlock -> {
                 lockPersist = true;
                 tfs.unlockEntry(tfs.get(entryId, user));
                 lockPersist = false;
                 doView();
-                break;
-            case lock:
-                us.morphTo(Locker.class, user).doView();
-                break;
-            case share:
-                us.morphTo(Sharer.class, user).doView();
-                break;
-            case renameFile:
-                us.morphTo(Renamer.class, user).doView();
-                break;
-            case dropFile:
+            }
+            case lock -> us.morphTo(Locker.class, user).doView();
+            case share -> us.morphTo(Sharer.class, user).doView();
+            case renameFile -> us.morphTo(Renamer.class, user).doView();
+            case dropFile -> {
                 final UUID fileId = entryId;
                 entryId = tfs.get(entryId, user).getParentId();
                 tfs.rm(fileId, user);
                 us.morphTo(DirViewer.class, user).doView();
-                break;
-            case Void:
-                user.doView();
-                break;
-            default:
+            }
+            case Void -> user.doView();
+            default -> {
                 logger.info("Нет обработчика для '" + command.type.name() + "'");
                 us.reset(user);
                 user.doView();
-                break;
+            }
         }
     }
 

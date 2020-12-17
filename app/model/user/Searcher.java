@@ -38,30 +38,21 @@ public class Searcher extends APager<TFile> implements InputSink {
     @Override
     public void onCallback(final Command command) {
         if (notPagerCall(command))
-            switch (command.type) {
-                case openSearchedDir:
-                    us.morphTo(DirViewer.class, user).doView(tfs.getSearchEntry(query, command.elementIdx, this));
-                    break;
-                case openSearchedFile:
-                    us.morphTo(FileViewer.class, user).doView(tfs.getSearchEntry(query, command.elementIdx, this));
-                    break;
-                case openSearchedLabel:
-                    us.morphTo(LabelViewer.class, user).doView(tfs.getSearchEntry(query, command.elementIdx, this));
-                    break;
-                case cancelSearch:
+            switch (command.type()) {
+                case openSearchedDir -> us.morphTo(DirViewer.class, user).doView(tfs.getSearchEntry(query, command.elementIdx(), this));
+                case openSearchedFile -> us.morphTo(FileViewer.class, user).doView(tfs.getSearchEntry(query, command.elementIdx(), this));
+                case openSearchedLabel -> us.morphTo(LabelViewer.class, user).doView(tfs.getSearchEntry(query, command.elementIdx(), this));
+                case cancelSearch -> {
                     final TFile entry = tfs.get(entryId, user);
                     final Class<? extends Role> role = entry.isDir() ? DirViewer.class : entry.isLabel() ? LabelViewer.class : FileViewer.class;
-
                     us.morphTo(role, user).doView();
-                    break;
-                case Void:
-                    user.doView();
-                    break;
-                default:
-                    logger.info("Нет обработчика для '" + command.type.name() + "'");
+                }
+                case Void -> user.doView();
+                default -> {
+                    logger.info("Нет обработчика для '" + command.type().name() + "'");
                     us.reset(user);
                     user.doView();
-                    break;
+                }
             }
     }
 

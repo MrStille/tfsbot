@@ -2,14 +2,13 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import model.*;
-import model.user.ShareGranter;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import services.TfsService;
+import services.Actions;
+import services.Tfs;
 import services.TgApi;
-import services.UserService;
 
 import javax.inject.Inject;
 import java.util.TreeMap;
@@ -32,10 +31,10 @@ public class Handler extends Controller {
     private TgApi api;
 
     @Inject
-    private UserService userService;
+    private Tfs tfs;
 
     @Inject
-    private TfsService tfs;
+    private Actions actions;
 
     public Result get() {
         return ok();
@@ -59,6 +58,7 @@ public class Handler extends Controller {
 
     private void handleJson(final JsonNode js) {
         final User user;
+        final Consumer<User> task;
 
         if (js.has("callback_query")) {
             api.sendCallbackAnswer("", js.get("callback_query").get("id").asLong(), false, 0);
@@ -69,18 +69,9 @@ public class Handler extends Controller {
 
             if (del < 1) {
                 logger.debug("Неизвестный науке коллбек: " + cb);
-                handleUserRequest(user, u -> {
-                    userService.reset(user);
-                    user.doView();
-                }, js);
-                return;
-            }
-
-            final Command command = new Command();
-            command.elementIdx = del < cb.length() - 1 ? getInt(cb.substring(del + 1)) : -1;
-            command.type = CommandType.ofString(cb);
-
-            handleUserRequest(user, u -> u.onCallback(command), js);
+                task = u -> actions.doView(u);
+            } else
+                task = u -> actions.onCallback(new Command(CommandType.ofString(cb), del < cb.length() - 1 ? getInt(cb.substring(del + 1)) : -1), u);
         } else if (js.has("message")) {
             CompletableFuture.runAsync(() -> api.deleteMessage(js.get("message").get("message_id").asLong(), js.get("message").get("from").get("id").asLong()));
 
@@ -89,28 +80,32 @@ public class Handler extends Controller {
             final String text = msg.has("text") ? msg.get("text").asText() : null;
             user = getUser(msg.get("from"));
 
-            if (msg.has("forward_from") && user.getRole() instanceof ShareGranter) {
+            if (msg.has("forward_from") && user.mode == User.Mode.ShareGranter) {
                 final TFile file = new TFile();
                 file.type = ContentType.CONTACT;
                 final JsonNode c = msg.get("forward_from");
                 file.setOwner(c.get("id").asLong());
                 final String f = c.has("first_name") ? c.get("first_name").asText() : "";
-                final String u = c.has("username") ? c.get("username").asText() : "";
-                file.name = notNull(f, notNull(u, "u" + file.getOwner()));
+                final String nick = c.has("username") ? c.get("username").asText() : "";
+                file.name = notNull(f, notNull(nick, "u" + file.getOwner()));
 
-                handleUserRequest(user, u0 -> u0.onFile(file), js);
+                task = u -> actions.onFile(file, u);
             } else if (text != null) {
-                if (text.equals("/start")) {
-                    api.sendText("Welcome!", null, null, user.id);
-                    handleUserRequest(user, User::doView, js);
-                } else if (text.equals("/reset"))
-                    handleUserRequest(user, this::doReset, js);
+                if (text.equals("/start"))
+                    task = u -> {
+//                        actions.doView(u);
+//                        api.dialogUnescaped(u.helpValue(), u, TgApi.voidKbd);
+                        tfs.viewDir(u);
+                    };
                 else if (text.equals("/help"))
-                    handleUserRequest(user, u -> api.dialogUnescaped(u.doHelp(), u, TgApi.voidKbd), js);
+                    task = u -> api.dialogUnescaped(u.helpValue(), u, TgApi.voidKbd);
                 else if (text.startsWith("/start shared-"))
-                    handleUserRequest(user, u -> u.joinShare(notNull(text).substring(14)), js);
+                    task = u -> {
+                        tfs.joinShare(notNull(text).substring(14), u);
+                        actions.doView(u);
+                    };
                 else
-                    handleUserRequest(user, u -> u.onInput(text), js);
+                    task = u -> actions.onInput(text, u);
             } else {
                 final JsonNode attachNode;
                 final TFile file = new TFile();
@@ -175,42 +170,23 @@ public class Handler extends Controller {
                     if (file.type == ContentType.CONTACT)
                         file.refId = attachNode.toString();
 
-                    handleUserRequest(user, u -> u.onFile(file), js);
+                    task = u -> actions.onFile(file, u);
                 } else
-                    handleUserRequest(user, User::doView, js);
+                    task = u -> actions.doView(u);
             }
         } else {
             logger.debug("Необслуживаемый тип сообщения");
+            return;
         }
-    }
 
-    private void doReset(final User user) {
-        final long userId = user.id;
-
-        CompletableFuture.runAsync(() -> {
-            api.cleanup(userId);
-            if (user.lastMessageId > 0)
-                api.deleteMessage(user.lastMessageId, userId);
-            userService.reset(user);
-            tfs.reinitUserTables(userId);
-            user.doView();
-
-            logger.info("User " + user.name + " #" + user.id + " rebuilded");
-        }).exceptionally(e -> {
-            logger.error("Resetting user #" + userId + ": " + e.getMessage(), e);
-            return null;
-        });
-    }
-
-    private void handleUserRequest(final User user, final Consumer<User> task, final JsonNode input) {
         CompletableFuture.runAsync(() -> {
             try {
                 task.accept(user);
             } finally {
-                userService.update(user);
+                tfs.update(user);
             }
         }).exceptionally(e -> {
-            logger.error("Handling input [" + input.toString() + "]: " + e.getMessage(), e);
+            logger.error("Handling input [" + js + "]: " + e.getMessage(), e);
             return null;
         });
     }
@@ -222,7 +198,7 @@ public class Handler extends Controller {
         final long id = node.get("id").asLong();
 
         try {
-            return userService.resolveUser(id,
+            return tfs.getUser(id,
                     node.has("language_code") ? node.get("language_code").asText() : "en",
                     notNull((notNull(f) + " " + notNull(l)), notNull(n, "u" + id)));
         } finally {

@@ -34,25 +34,19 @@ public class LabelViewer extends ARole implements CallbackSink {
     @Override
     public void onCallback(final Command command) {
         switch (command.type) {
-            case openParent:
-                us.morphTo(DirViewer.class, user).doView(tfs.getParentOf(entryId, user));
-                break;
-            case editLabel:
-                us.morphTo(LabelEditor.class, user).doView();
-                break;
-            case dropLabel:
+            case openParent -> us.morphTo(DirViewer.class, user).doView(tfs.getParentOf(entryId, user));
+            case editLabel -> us.morphTo(LabelEditor.class, user).doView();
+            case dropLabel -> {
                 final TFile dir = tfs.getParentOf(entryId, user);
                 tfs.rm(entryId, user);
                 us.morphTo(DirViewer.class, user).doView(dir);
-                break;
-            case Void:
-                user.doView();
-                break;
-            default:
+            }
+            case Void -> user.doView();
+            default -> {
                 logger.info("Нет обработчика для '" + command.type.name() + "'");
                 us.reset(user);
                 user.doView();
-                break;
+            }
         }
     }
 

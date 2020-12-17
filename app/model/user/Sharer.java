@@ -87,44 +87,40 @@ public class Sharer extends APager<Share> {
     public void onCallback(final Command command) {
         if (notPagerCall(command))
             switch (command.type) {
-                case changeGrantRw:
+                case changeGrantRw -> {
                     tfs.changeEntryGrantRw(entryId, command.elementIdx, this);
                     doView();
-                    break;
-                case dropEntryLink:
+                }
+                case dropEntryLink -> {
                     tfs.dropEntryLink(entryId, user.id);
                     doView();
-                    break;
-                case makeEntryLink:
+                }
+                case makeEntryLink -> {
                     tfs.makeEntryLink(entryId, user);
                     doView();
-                    break;
-                case mkGrant:
-                    us.morphTo(ShareGranter.class, user).doView();
-                    break;
-                case cancel:
+                }
+                case mkGrant -> us.morphTo(ShareGranter.class, user).doView();
+                case cancel -> {
                     final TFile file = tfs.get(entryId, user);
                     if (file.isDir())
                         us.morphTo(DirGearer.class, user).doView();
                     else
                         us.morphTo(FileViewer.class, user).doView(file);
-                    break;
-                case dropGrant:
+                }
+                case dropGrant -> {
                     tfs.dropEntryGrant(entryId, command.elementIdx, this);
                     doView();
-                    break;
-                case gear:
+                }
+                case gear -> {
                     gearing = true;
                     doView();
-                    break;
-                case Void:
-                    user.doView();
-                    break;
-                default:
+                }
+                case Void -> user.doView();
+                default -> {
                     logger.info("Нет обработчика для '" + command.type.name() + "'");
                     us.reset(user);
                     user.doView();
-                    break;
+                }
             }
     }
 

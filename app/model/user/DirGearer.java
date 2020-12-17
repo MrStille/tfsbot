@@ -36,7 +36,7 @@ public class DirGearer extends APager<TFile> {
     @Override
     public void onCallback(final Command command) {
         if (notPagerCall(command))
-            switch (command.type) {
+            switch (command.type()) {
                 case unlock:
                     lockPersist = true;
                     us.morphTo(Unlocker.class, user).doView();
@@ -59,13 +59,13 @@ public class DirGearer extends APager<TFile> {
                     us.morphTo(DirViewer.class, user).doView();
                     break;
                 case openLabel:
-                    us.morphTo(LabelViewer.class, user).doView(tfs.getGearEntry(entryId, command.elementIdx, this));
+                    us.morphTo(LabelViewer.class, user).doView(tfs.getGearEntry(entryId, command.elementIdx(), this));
                     break;
                 case Void:
                     user.doView();
                     break;
                 default:
-                    logger.info("Нет обработчика для '" + command.type.name() + "'");
+                    logger.info("Нет обработчика для '" + command.type().name() + "'");
                     us.reset(user);
                     user.doView();
                     break;

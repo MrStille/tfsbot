@@ -39,34 +39,22 @@ public class DirViewer extends APager<TFile> {
     public void onCallback(final Command command) {
         if (notPagerCall(command))
             switch (command.type) {
-                case openParent:
+                case openParent -> {
                     entryId = tfs.get(entryId, user).getParentId();
                     scopeChanged();
                     doView();
-                    break;
-                case mkDir:
-                    us.morphTo(DirMaker.class, user).doView();
-                    break;
-                case mkLabel:
-                    us.morphTo(LabelMaker.class, user).doView();
-                    break;
-                case openDir:
-                    doView(tfs.getFolderEntry(entryId, command.elementIdx, this));
-                    break;
-                case openFile:
-                    us.morphTo(FileViewer.class, user).doView(tfs.getFolderEntry(entryId, command.elementIdx, this));
-                    break;
-                case gear:
-                    us.morphTo(DirGearer.class, user).doView();
-                    break;
-                case Void:
-                    user.doView();
-                    break;
-                default:
+                }
+                case mkDir -> us.morphTo(DirMaker.class, user).doView();
+                case mkLabel -> us.morphTo(LabelMaker.class, user).doView();
+                case openDir -> doView(tfs.getFolderEntry(entryId, command.elementIdx, this));
+                case openFile -> us.morphTo(FileViewer.class, user).doView(tfs.getFolderEntry(entryId, command.elementIdx, this));
+                case gear -> us.morphTo(DirGearer.class, user).doView();
+                case Void -> user.doView();
+                default -> {
                     logger.info("Нет обработчика для '" + command.type.name() + "'");
                     us.reset(user);
                     user.doView();
-                    break;
+                }
             }
     }
 

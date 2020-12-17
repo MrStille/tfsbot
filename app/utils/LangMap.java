@@ -73,24 +73,28 @@ public class LangMap {
                         escapeMd("Нажатие на любую кнопку приводит к переходу в режим обычного просмотра выбранного элемента, согласно его типу, но в этом просмотре кнопка выхода " +
                                 "из просмотра (" + Strings.Uni.goUp + ") будет вести обратно к результатам поиска.\n"));
         init(Value.ROOT_HELP, mdBold("Root folder\n") +
-                        escapeMd("You are in the root folder of the TeleFS.\n\n" +
-                                "Bot allows to create, edit and delete folders and files just like you do it on your home PC, only hierarchy is available immediately via all " +
-                                "your devices with your telegram account.\n" +
-                                "Physically files are in the telegram's cloud and its real content is unaccessible to neither bot nor somebody else, untill you decide to share " +
-                                "it.\n" +
-                                "Bot follows 'one window' policy, that means, that any time you see single message from it where content depends on your mode and " +
-                                "performed commands; e.g. if you searched for something then you see search results, if you changed a folder - you see folder's content in same " +
-                                "message and so on.\n\n" +
-                                "Regardless of modes and actions, four actions are available to you at any given time:\n") +
+                        escapeMd("""
+                                You are in the root folder of the TeleFS.
+
+                                Bot allows to create, edit and delete folders and files just like you do it on your home PC, only hierarchy is available immediately via all your devices with your telegram account.
+                                Physically files are in the telegram's cloud and its real content is unaccessible to neither bot nor somebody else, untill you decide to share it.
+                                Bot follows 'one window' policy, that means, that any time you see single message from it where content depends on your mode and performed commands; e.g. if you searched for something then you see search results, if you changed a folder - you see folder's content in same message and so on.
+
+                                Regardless of modes and actions, four actions are available to you at any given time:
+                                """) +
                         mdBold("1. ") + mdItalic("files upload") + escapeMd(" bot's main goal is to keep access to your folders and files according to your structure. Any time " +
                         "you can extend your collection just simple send any number of files, all of it will be stored in a current folder, where you are while send it.. " +
                         "No special command or action is required, just send files to bot and thats it. ") + mdItalic(
-                                "Be aware, simple 'documents' are saved with original filenames, but its not so for media files - unfortunately, telegram loses its filenames, so" +
-                                        " bot have to construct it from the file's types.\n" +
-                        "Hint: if you will apply a comment while sending a file, then bot will use it as filename\n\n") +
+                """
+                        Be aware, simple 'documents' are saved with original filenames, but its not so for media files - unfortunately, telegram loses its filenames, so bot have to construct it from the file's types.
+                        Hint: if you will apply a comment while sending a file, then bot will use it as filename
+
+                        """) +
                         mdBold("2. ") + escapeMd("'/reset' command - reset bot's state if it is unconscious and takes you here, to the root folder.\n\n") +
-                        mdBold("3. ") + escapeMd("'/help' - context help, reflects on your actions and current position. If you're missed and dont know what to do - use this " +
-                        "command.\n\n") +
+                        mdBold("3. ") + escapeMd("""
+                        '/help' - context help, reflects on your actions and current position. If you're missed and dont know what to do - use this command.
+
+                        """) +
                         mdBold("4. ") + mdItalic("search by filename") + escapeMd(" - you can start search anywhere at full hierarchy depth from where you are, just send a " +
                         "query text. ") + mdItalic("The search is always case-insensitive and for any part of the name\n\n") +
                         escapeMd("These buttons are available at the root folder:\n") +
@@ -98,28 +102,35 @@ public class LangMap {
                         escapeMd(Strings.Uni.mkdir + " - make a subfolder. ") + mdItalic("you will have to type a new subfolder's name after click") + "\n" +
                         escapeMd(Strings.Uni.gear + " - go to the 'notes manage mode'. ") + mdItalic("you will be able to manage existed notes in the root folder"),
                 mdBold("Домашняя папка\n") +
-                        escapeMd("Вы находитесь в домашней папке вашей файловой системы TeleFS.\n\n" +
-                                "Бот позволяет создавать, изменять и удалять папки и файлы также, как вы делаете это на своём компьютере, только эта иерархия сразу доступна на всех" +
-                                " ваших устройствах, где запущен telegram под вашим аккаунтом.\n" +
-                                "Файлы физически находятся в облаке telegram и их содержимое недоступно ни боту, ни кому-либо ещё, до тех пор, пока вы не решите поделиться доступом с " +
-                                "кем-либо.\n" +
-                                "Бот работает в режиме 'единого окна', это означает, что в любой момент времени вы видите только одно сообщение от бота, в котором содержимое " +
-                                "соответствует режиму и командам, принятым от вас; то есть, если вы что-то искали - вы видите результаты поиска, если вы перешли в директорию - " +
-                                "содержимое сообщения изменится на список содержимого этой директории и так далее.\n\n" +
-                                "Независимо от режимов и действий, в любой момент времени вам доступны четыре действия:\n") +
+                        escapeMd("""
+                                Вы находитесь в домашней папке вашей файловой системы TeleFS.
+
+                                Бот позволяет создавать, изменять и удалять папки и файлы также, как вы делаете это на своём компьютере, только эта иерархия сразу доступна на всех ваших устройствах, где запущен telegram под вашим аккаунтом.
+                                Файлы физически находятся в облаке telegram и их содержимое недоступно ни боту, ни кому-либо ещё, до тех пор, пока вы не решите поделиться доступом с кем-либо.
+                                Бот работает в режиме 'единого окна', это означает, что в любой момент времени вы видите только одно сообщение от бота, в котором содержимое соответствует режиму и командам, принятым от вас; то есть, если вы что-то искали - вы видите результаты поиска, если вы перешли в директорию - содержимое сообщения изменится на список содержимого этой директории и так далее.
+
+                                Независимо от режимов и действий, в любой момент времени вам доступны четыре действия:
+                                """) +
                         mdBold("1. ") + mdItalic("добавление файлов") + escapeMd(" главная задача бота - хранить доступ к вашим файлам, согласно созданной вами структуре. Вы в любой " +
                         "момент можете пополнить вашу коллекцию просто отправив любое количество файлов боту, они будут сохранены в той папке, где вы находитесь в момент отправки. " +
-                        "Никаких специальных комманд или действий не требуется - просто посылайте файлы. ") + mdItalic("Обратите внимание, что документы сохраняются с теми " +
-                        "именами, с которыми они были посланы, но это не касается фотографий, видео и аудио материалов - к сожалению, telegram не передаёт их имена, потому бот называет " +
-                        "полученные файлы согласно их типам.\n" +
-                        "Подсказка: если вы посылаете файл и в комментарии напишете что-либо, то комментарий будет использован в качестве имени файла\n\n") +
-                        mdBold("2. ") + escapeMd("команда '/reset' - если отклик бота неадекватен или отсутствует. Это сбрасывает ваше взаимодействие с ботом и возвращает вас " +
-                        "на начальную точку - сюда, в домашнюю папку.\n\n") +
-                        mdBold("3. ") + escapeMd("команда '/help' - контекстная помощь, в зависимости от того, где вы сейчас находитесь и что делали. Если вы запутались и не знаете " +
-                        "куда нажать - отправьте эту команду.\n\n") +
+                        "Никаких специальных комманд или действий не требуется - просто посылайте файлы. ") + mdItalic("""
+                        Обратите внимание, что документы сохраняются с теми именами, с которыми они были посланы, но это не касается фотографий, видео и аудио материалов - к сожалению, telegram не передаёт их имена, потому бот называет полученные файлы согласно их типам.
+                        Подсказка: если вы посылаете файл и в комментарии напишете что-либо, то комментарий будет использован в качестве имени файла
+
+                        """) +
+                        mdBold("2. ") + escapeMd("""
+                        команда '/reset' - если отклик бота неадекватен или отсутствует. Это сбрасывает ваше взаимодействие с ботом и возвращает вас на начальную точку - сюда, в домашнюю папку.
+
+                        """) +
+                        mdBold("3. ") + escapeMd("""
+                        команда '/help' - контекстная помощь, в зависимости от того, где вы сейчас находитесь и что делали. Если вы запутались и не знаете куда нажать - отправьте эту команду.
+
+                        """) +
                         mdBold("4. ") + mdItalic("поиск по имени") + escapeMd(" - в любом месте файловой системы вы можете искать файлы и папки по имени, вглубь по всей иерархии, " +
-                        "начиная с того места, где вы находитесь. Просто отправьте сообщение с частью искомого имени из любого места. ") + mdItalic("Поиск всегда происходит без учёта " +
-                        "регистра и по любой части имени\n\n") +
+                        "начиная с того места, где вы находитесь. Просто отправьте сообщение с частью искомого имени из любого места. ") + mdItalic("""
+                        Поиск всегда происходит без учёта регистра и по любой части имени
+
+                        """) +
                         escapeMd("В домашней папке вам доступны следующие кнопки управления:\n") +
                         escapeMd(Strings.Uni.label + " - создание заметки в текущей папке. ") + mdItalic("после нажатия нужно будет ввести текст заметки") + "\n" +
                         escapeMd(Strings.Uni.mkdir + " - создание подпапки в текущей папке. ") + mdItalic("после нажатия нужно будет ввести имя новой папки") + "\n" +

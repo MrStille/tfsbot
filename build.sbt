@@ -9,7 +9,7 @@ javacOptions ++= Seq("-Xlint:all")
 
 resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.13.4"
 
 libraryDependencies ++= Seq(
   guice, javaJdbc, javaWs, ws,

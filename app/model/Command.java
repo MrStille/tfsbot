@@ -5,9 +5,10 @@ package model;
  * 12.06.2020
  * tfs ☭ sweat and blood
  */
-public class Command {
-    public CommandType type = CommandType.cancel;
-    public int elementIdx;
-    public TFile file;
-    public String input;
+public record Command(
+        CommandType type,
+        int elementIdx//,
+//        TFile file,
+//        String input
+) {
 }
